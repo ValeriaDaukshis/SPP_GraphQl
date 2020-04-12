@@ -1,0 +1,13 @@
+<div class="container">
+    <h2>{{task.name}}</h2>
+
+    <p>Deadline: {{task.deadline}}</p>
+    <p>{{task.details}}</p>
+
+    <div class="btn-group mr-2" role="group" aria-label="Back group" (click)="onCancel()">
+        <button type="button" class="btn btn-primary">Back</button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Delete group" (click)="onDelete()">
+        <button type="button" class="btn btn-danger">Delete</button>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="container">
+    <h4 class="card-header">Registration page</h4>
+        <form (ngSubmit)="onSubmit()" #taskForm="ngForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="name" aria-describedby="usernameLabel" minlength="4" maxlength="30" required [(ngModel)]="user.username"
+                name="username" #username="ngModel" />
+                <div *ngIf="username.invalid && (username.dirty || username.touched)" class="alert alert-danger">
+                    <div *ngIf="username.errors.required">username is required.</div>
+                    <div *ngIf="username.errors.minlength">username must be at least 4 characters long.</div>
+                  </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="name" aria-describedby="passwordLabel" minlength="8" maxlength="20" required [(ngModel)]="user.password"
+                 name="password" #password="ngModel" />
+                 <div *ngIf="password.invalid && (password.dirty || password.touched)" class="alert alert-danger">
+                    <div *ngIf="password.errors.required">password is required.</div>
+                    <div *ngIf="password.errors.minlength">password must be at least 8 characters long.</div>
+                  </div>
+            </div>
+            <div class="form-group">
+                <label for="repeatPassword">Repeat password</label>
+                <input type="password" class="form-control" id="name" aria-describedby="repeatPasswordLabel" minlength="8" maxlength="20" required [(ngModel)]="user.repeatPassword"
+                 name="repeatPassword" #repeatPassword="ngModel" />
+                 <div *ngIf="repeatPassword.invalid && (repeatPassword.dirty || repeatPassword.touched)" class="alert alert-danger">
+                    <div *ngIf="repeatPassword.errors.required">repeatPassword is required.</div>
+                    <div *ngIf="repeatPassword.errors.minlength">repeatPassword must be at least 8 characters long.</div>
+                    
+                  </div>
+                  <div class="alert alert-danger" *ngIf="user.repeatPassword !== user.password">repeatPassword and password are not the same</div>
+            </div>
+            <div class="btn-group mr-2" role="group" aria-label="Save group" (click)="onRegistrate(user)">
+                  <button type="button" class="btn btn-primary">Sing in</button>
+            </div>
+            <div class="btn-group mr-2" role="group" aria-label="Save group">
+                <button  routerLink="/login" class="btn btn-primary">Authorization page</button>
+            </div>
+        <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+    </form>
+</div>

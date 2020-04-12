@@ -1,0 +1,58 @@
+<div class="container">
+    <h2>Tasks List</h2>
+    <span class="btn-toolbar" role="toolbar" aria-label="Hive action buttons" style="display: block; white-space:nowrap;">
+    <div class="btn-group mr-2 mb-2" role="group" aria-label="Unfinish group" (click)="sortByName()">
+      <button type="button" class="btn btn-primary">Sort by name</button>
+    </div>
+    <div class="btn-group mr-2 mb-2" role="group" aria-label="Unfinish group" (click)="sortByDeadline()">
+      <button type="button" class="btn btn-primary">Sort by deadline</button>
+    </div>
+    <div class="btn-group mr-2 mb-2" role="group" aria-label="Unfinish group" (click)="showUnfinished()">
+      <button type="button" class="btn btn-primary">Show unfinished</button>
+    </div>
+    <div class="btn-group mr-2 mb-2" role="group" aria-label="Finish group" (click)="getAllTasks()">
+      <button type="button" class="btn btn-primary">Without sorting</button>
+    </div>
+  </span>
+    <table class="table table-nonfluid">
+      <thead>
+        <th scope="col">Name</th>
+        <th scope="col">Deadline</th>
+        <th scope="col">Is Made</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasks">
+          <th scope="row">{{task.name}}</th>
+          <th scope="row" class="text-success" role="group" aria-label="green group" *ngIf ='task.isMade else blue'>{{task.deadline}}</th>
+          <th scope="row" class="text-primary" role="group" aria-label="blue group" *ngIf ='!task.isMade && !task.isExpired else red'>{{task.deadline}}</th>
+          <th scope="row" class="text-danger" role="group" aria-label="red group" *ngIf ='!task.isMade && task.isExpired else green'>{{task.deadline}}</th>
+          <th scope="row">{{task.isMade}}</th>
+          <td>
+            <span class="btn-toolbar" role="toolbar" aria-label="Hive action buttons" style="display: block; white-space:nowrap;"> 
+              <div class="btn-group mr-2" role="group" aria-label="View group">
+                <button routerLink="/{{task.user_id}}/task/{{task._id}}/details" type="button" class="btn btn-primary">View details</button>
+              </div>       
+              <div class="btn-group mr-2" role="group" aria-label="Edit group">
+                <button routerLink="/{{task.user_id}}/task/{{task._id}}" type="button" class="btn btn-primary">Edit</button>
+              </div>
+              <div class="btn-group mr-2" role="group" aria-label="Finish group" *ngIf="!task.isMade else Unfinish" (click)="onFinish(task._id)">
+                <button type="button" class="btn btn-danger">Finish</button>
+            </div>
+            <div class="btn-group mr-2" role="group" aria-label="Unfinish group" *ngIf="task.isMade else finish" (click)="onUnfinish(task._id)">
+                <button type="button" class="btn btn-danger">Unfinish</button>
+            </div>
+            </span>
+          </td>
+        </tr>
+        <div class="btn-toolbar" role="toolbar" aria-label="Action buttons">
+          <div class="btn-group" role="group" aria-label="New group">
+            <button routerLink="/{{userId}}/task" type="button" class="btn btn-primary">New Task</button>
+          </div>
+        </div>
+      </tbody>
+      
+    </table>
+    
+  </div>
+  
+  

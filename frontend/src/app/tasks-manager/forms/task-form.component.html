@@ -1,0 +1,38 @@
+<div class="container">
+    <h2>Task Editor</h2>
+    <form (ngSubmit)="onSubmit()" #taskForm="ngForm">
+      <div class="form-group">
+        <label for="name" id="nameLabel">Task name</label>
+        <input type="text" class="form-control" id="name" aria-describedby="nameLabel" minlength="4" maxlength="30" required [(ngModel)]="task.name"
+          name="name" #name="ngModel">
+        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert alert-danger">
+          <div *ngIf="name.errors.required">Task name is required.</div>
+          <div *ngIf="name.errors.minlength">Task name must be at least 4 characters long.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="deadline" id="deadlineLabel">Task deadline</label>
+        <input type="date" class="form-control" id="deadline" aria-describedby="deadlineLabel"  required [(ngModel)]="task.deadline"
+          name="deadline" #deadline="ngModel">
+        <div *ngIf="deadline.invalid && (deadline.dirty || deadline.touched)" class="alert alert-danger">
+          <div *ngIf="details.errors.required">Task details is required.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="details" id="detailsLabel">Task details</label>
+        <textarea type="text" class="form-control" id="details" aria-describedby="detailsLabel" minlength="8" maxlength="2000" required [(ngModel)]="task.details"
+          name="details" #details="ngModel"></textarea>
+        <div *ngIf="details.invalid && (details.dirty || details.touched)" class="alert alert-danger">
+          <div *ngIf="details.errors.required">Task details is required.</div>
+          <div *ngIf="details.errors.minlength">Task details must be at least 8 characters long.</div>
+        </div>
+      </div>
+      <div class="btn-group mr-2" role="group" aria-label="Back group" (click)="onCancel()">
+        <button type="button" class="btn btn-primary">Back</button>
+      </div>
+      <div class="btn-group mr-2" role="group" aria-label="Save group" (click)="onSubmit(task)">
+          <button type="button" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+  

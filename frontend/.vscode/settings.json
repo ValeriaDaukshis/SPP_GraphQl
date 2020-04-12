@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/ba2d050c-22fa-4390-82d3-96bb4eca8b52/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/KatlaSportFrontEnd",
+    "appService.deploySubpath": ""
+}
