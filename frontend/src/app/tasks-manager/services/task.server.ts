@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, onErrorResumeNext } from 'rxjs';
 import { Task } from '../models/task';
+import { Apollo } from "apollo-angular";
+import { map } from 'rxjs/operators';
+import gql from "graphql-tag";
 
 @Injectable({
   providedIn: 'root'
@@ -15,26 +18,158 @@ export class TaskService {
   private url = environment.apiUrl;
   private singleUrl = environment.apiUrl + '/task/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private apollo: Apollo) { }
 
   getTasks(userId: Object): Observable<Array<Task>> {
-    return this.http.get<Array<Task>>(`${this.url}${userId}/tasks/`);
+    return new Observable<Array<Task>>(observer => {
+    const getTasks = gql`
+        query Tasks($user_id: ID!) {
+          Tasks (user_id: $user_id){
+            id
+            name
+            deadline
+            details
+            isMade
+            user_id
+          }
+        }
+    `;
+
+    this.apollo
+      .watchQuery({
+        query: getTasks,
+        variables: {
+          user_id: userId,
+      },
+        fetchPolicy: "network-only"
+      })
+      .valueChanges
+      .subscribe((data:any) => {
+        observer.next(data.data.Tasks);
+      });
+    });
   }
 
   getSortedByDeadlineTasks(userId: Object): Observable<Array<Task>> {
-    return this.http.get<Array<Task>>(`${this.url}${userId}/tasks/sortByDeadline/`);
+    return new Observable<Array<Task>>(observer => {
+      const getSortedByDeadlineTasks = gql`
+          query SortedByDeadlineTasks($user_id: ID!) {
+            SortedByDeadlineTasks (user_id: $user_id){
+              id
+              name
+              deadline
+              details
+              isMade
+              user_id
+            }
+          }
+      `;
+  
+      this.apollo
+        .watchQuery({
+          query: getSortedByDeadlineTasks,
+          variables: {
+            user_id: userId,
+        },
+        })
+        .valueChanges
+        .subscribe((data:any) => {
+          observer.next(data.data.SortedByDeadlineTasks);
+        });
+      });
   }
 
   getSortedByNameTasks(userId: Object): Observable<Array<Task>> {
-    return this.http.get<Array<Task>>(`${this.url}${userId}/tasks/sortByName/`);
+    return new Observable<Array<Task>>(observer => {
+      const getTasks = gql`
+          query SortedByNameTasks($user_id: ID!) {
+            SortedByNameTasks (user_id: $user_id){
+              id
+              name
+              deadline
+              details
+              isMade
+              user_id
+            }
+          }
+      `;
+  
+      this.apollo
+        .watchQuery({
+          query: getTasks,
+          variables: {
+            user_id: userId,
+        },
+          fetchPolicy: "network-only"
+        })
+        .valueChanges
+        .subscribe((data:any) => {
+          observer.next(data.data.SortedByNameTasks);
+        });
+      });
   }
 
   getUnfinished(userId: Object): Observable<Array<Task>> {
-    return this.http.get<Array<Task>>(`${this.url}${userId}/tasks/getUnfinished/`);
+    return new Observable<Array<Task>>(observer => {
+      const getTasks = gql`
+          query UnfinishedTasks($user_id: ID!) {
+            UnfinishedTasks (user_id: $user_id){
+              id
+              name
+              deadline
+              details
+              isMade
+              user_id
+            }
+          }
+      `;
+  
+      this.apollo
+        .watchQuery({
+          query: getTasks,
+          variables: {
+            user_id: userId,
+        },
+          fetchPolicy: "network-only"
+        })
+        .valueChanges
+        .subscribe((data:any) => {
+          if(!data)
+          console.log("aaa!null!");
+          console.log(data.data);
+          observer.next(data.data);
+        });
+      });
   }
 
   getTask(userId: Object, taskId: number): Observable<Task> {
-    return this.http.get<Task>(`${this.url}${userId}/tasks/${taskId}`);
+    return new Observable<Task>(observer => {
+      const getTask = gql`
+          query Task($id: ID!) {
+            Task (id: $id){
+              id
+              name
+              deadline
+              details
+              isMade
+              user_id
+            }
+          }
+      `;
+  
+      this.apollo
+        .watchQuery({
+          query: getTask,
+          variables: {
+            id: taskId,
+        },
+          fetchPolicy: "network-only"
+        })
+        .valueChanges
+        .subscribe((data:any) => {
+          observer.next(data.data.Task);
+        });
+      });
   }
 
   addTask(task: Task) : Observable<Task> {

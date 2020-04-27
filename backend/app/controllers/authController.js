@@ -11,7 +11,7 @@ exports.login = (req, response) => {
         userName: data.userName, 
         password: data.password
     };
-    console.log(note);
+    
     User.findOne(note, (err, user) => {
         if (!user) {
             response.status(404).send({
