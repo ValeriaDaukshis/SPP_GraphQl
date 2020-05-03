@@ -6,26 +6,22 @@ import { Task } from '../models/task';
 import { Apollo } from "apollo-angular";
 import { map } from 'rxjs/operators';
 import gql from "graphql-tag";
+import { TaskInput } from '../models/taskSend';
+import { t } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private headers: HttpHeaders = new HttpHeaders({
-    'Content-Type':  'application/x-www-form-urlencoded',
-});
-  //private url = environment.apiUrl + '/tasks/';
-  private url = environment.apiUrl;
-  private singleUrl = environment.apiUrl + '/task/';
 
-  constructor(private http: HttpClient, private apollo: Apollo) { }
+  constructor(private apollo: Apollo) { }
 
   getTasks(userId: Object): Observable<Array<Task>> {
     return new Observable<Array<Task>>(observer => {
     const getTasks = gql`
         query Tasks($user_id: ID!) {
           Tasks (user_id: $user_id){
-            id
+            _id
             name
             deadline
             details
@@ -45,6 +41,7 @@ export class TaskService {
       })
       .valueChanges
       .subscribe((data:any) => {
+        console.log(data.data.Tasks);
         observer.next(data.data.Tasks);
       });
     });
@@ -53,9 +50,9 @@ export class TaskService {
   getSortedByDeadlineTasks(userId: Object): Observable<Array<Task>> {
     return new Observable<Array<Task>>(observer => {
       const getSortedByDeadlineTasks = gql`
-          query SortedByDeadlineTasks($user_id: ID!) {
+      query SortedByDeadlineTasks($user_id: ID!) {
             SortedByDeadlineTasks (user_id: $user_id){
-              id
+              _id
               name
               deadline
               details
@@ -75,6 +72,9 @@ export class TaskService {
         .valueChanges
         .subscribe((data:any) => {
           observer.next(data.data.SortedByDeadlineTasks);
+        },
+        error => {
+            console.log("there was an error sending the query", error);
         });
       });
   }
@@ -84,7 +84,7 @@ export class TaskService {
       const getTasks = gql`
           query SortedByNameTasks($user_id: ID!) {
             SortedByNameTasks (user_id: $user_id){
-              id
+              _id
               name
               deadline
               details
@@ -114,7 +114,7 @@ export class TaskService {
       const getTasks = gql`
           query UnfinishedTasks($user_id: ID!) {
             UnfinishedTasks (user_id: $user_id){
-              id
+              _id
               name
               deadline
               details
@@ -134,20 +134,17 @@ export class TaskService {
         })
         .valueChanges
         .subscribe((data:any) => {
-          if(!data)
-          console.log("aaa!null!");
-          console.log(data.data);
-          observer.next(data.data);
+          observer.next(data.data.UnfinishedTasks);
         });
       });
   }
 
-  getTask(userId: Object, taskId: number): Observable<Task> {
+  getTask(taskId: Object): Observable<Task> {
     return new Observable<Task>(observer => {
       const getTask = gql`
-          query Task($id: ID!) {
-            Task (id: $id){
-              id
+          query GetTask($id: ID!) {
+            GetTask (id: $id){
+              _id
               name
               deadline
               details
@@ -167,40 +164,169 @@ export class TaskService {
         })
         .valueChanges
         .subscribe((data:any) => {
-          observer.next(data.data.Task);
+          observer.next(data.data.GetTask);
         });
       });
   }
 
-  addTask(task: Task) : Observable<Task> {
-   console.log();
-    let form = this.init(task);
-    return this.http.post<Task>(`${this.url}${task.user_id}/task/`, form.toString(), {headers: this.headers});
+  addTask(task: TaskInput) : Observable<Task> {
+    return new Observable<Task>(observer => {
+      const addTask = gql`
+      mutation addTask(
+        $name: String!
+        $deadline: String!
+        $details: String!
+        $isMade: Boolean!
+        $user_id: ID!
+        ) {
+          addTask(
+          name: $name
+          deadline: $deadline
+          details: $details
+          isMade: $isMade
+          user_id: $user_id
+          ) {
+            _id
+            name
+            deadline
+            details
+            isMade
+            user_id
+          }
+      }
+  `;
+  this.apollo
+      .mutate({
+      mutation: addTask,
+      variables: {
+        name: task.name,
+        deadline: task.deadline,
+        details: task.details,
+        isMade: task.isMade,
+        user_id: task.user_id,
+      },
+      fetchPolicy: "no-cache"
+      })
+      .subscribe((data:any) => {
+          observer.next(data.data.addTask);
+      },
+      error => {
+          console.log("there was an error sending the query", error);
+      });
+  });
   }
 
-  updateTask(task: Task): Observable<Task>{
-    let form = this.init(task);
-    return this.http.put<Task>(`${this.url}${task.user_id}/task/${task._id}`, form.toString(), {headers: this.headers});
+  updateTask(task: TaskInput): Observable<Task>{
+    return new Observable<Task>(observer => {
+      const updateTask = gql`
+      mutation updateTask(
+        $id: ID!
+        $name: String!
+        $deadline: String!
+        $details: String!
+        $isMade: Boolean!
+        $user_id: ID!
+        ) {
+        updateTask(
+          id: $id
+          name: $name
+          deadline: $deadline
+          details: $details
+          isMade: $isMade
+          user_id: $user_id
+          ) {
+            _id
+            name
+            deadline
+            details
+            isMade
+            user_id
+          }
+      }
+  `;
+  this.apollo
+      .mutate({
+      mutation: updateTask,
+      variables: {
+        id: task._id,
+        name: task.name,
+        deadline: task.deadline,
+        details: task.details,
+        isMade: task.isMade,
+        user_id: task.user_id,
+      },
+      fetchPolicy: "no-cache"
+      })
+      .subscribe((data:any) => {
+          observer.next(data.data.updateTask);
+      },
+      error => {
+          console.log("there was an error sending the query", error);
+      });
+  });
   }
 
-  setTaskStatus(task: Task, status: boolean): Observable<Object> {
-    let form = this.init(task);
-    return this.http.put<Object>(`${this.url}${task.user_id}/task/${task._id}/status/${status}`, form.toString(), {headers: this.headers});
+  setTaskStatus(task2: TaskInput, status2: Boolean): Observable<Object> {
+    return new Observable<Object>(observer => {
+      const setStatus = gql`
+      mutation setStatus(
+        $id: ID!
+        $status: Boolean!) {
+      setStatus(
+        id: $id
+        status: $status
+          ) {
+            _id
+            name
+            deadline
+            details
+            isMade
+            user_id
+          }
+      }
+  `;
+  this.apollo
+      .mutate({
+      mutation: setStatus,
+      variables: {
+          id: task2._id,
+          status: status2,
+      },
+      })
+      .subscribe((data:any) => {
+          observer.next(data.data.setStatus);
+      },
+      error => {
+          console.log("there was an error sending the query", error);
+      });
+  });
   }
 
-  deleteTask(userId: Object, taskId: object): Observable<Object> {
-    return this.http.delete<Object>(`${this.url}${userId}/task/${taskId}`);
-  }
-
-  init( task: Task) {
-    let form = new HttpParams()
-     .set(`_id`, task._id === null ? null : task._id.toString()) 
-     .set(`deadline`, task.deadline)
-     .set(`details`, task.details)
-     .set(`isMade`, task._id === null ? "false" : task.isMade.toString())
-     .set(`name`, task.name)
-     .set(`user_id`, task.user_id === null ? null : task.user_id.toString());
-
-     return form;
+  deleteTask(taskId: Object): Observable<Object> {
+    return new Observable<Object>(observer => {
+      const deleteTask = gql`
+      mutation deleteTask(
+        $id: ID!) {
+          deleteTask(
+        id: $id
+          ) {
+            _id
+          }
+      }
+  `;
+  this.apollo
+      .mutate({
+      mutation: deleteTask,
+      variables: {
+          id: taskId
+      },
+      })
+      .subscribe((data:any) => {
+          observer.next(data.data.deleteTask);
+      },
+      error => {
+          console.log("there was an error sending the query", error);
+      });
+  });
   }
 }

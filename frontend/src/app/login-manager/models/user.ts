@@ -1,8 +1,8 @@
 export class User {
     constructor(
-        public _id: object,
-        public userName: string,
-        public password: string,
-        public token?: string,
+        public _id: Object,
+        public userName: String,
+        public password: String,
+        public token?: String,
     ){}
 }

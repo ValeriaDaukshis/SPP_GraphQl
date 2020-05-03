@@ -14,35 +14,37 @@ const resolvers = {
                 return err.message;
             return result;
         }),
-      Task: (_, { id }) =>
+        GetTask: (_, { id }) =>
         Task.findById(id, function(err, task) {
             if(err)
                 return err.message;
             return task;
         }),
-     SortedByDeadlineTasks: async (_, { user_id }) => {
-         Task.find({user_id: new mongoose.Types.ObjectId(user_id)})
-        .sort({deadline: 'asc'}).exec(function(err, result){
-            console.log(result);
-            if(err)
-                return err.message;
-            return result;
-        })},
+        SortedByDeadlineTasks: (_, { user_id }) => {
+            return Task.find({user_id: new mongoose.Types.ObjectId(user_id)}, null, {sort: {deadline: 'asc'}}, function(err, result){
+                if(err)
+                    return err.message;
+                return result;
+    
+            })
+        },
      SortedByNameTasks: (_, { user_id }) => {
-        return Task.find({user_id: new mongoose.Types.ObjectId(user_id)})
-        .sort({name: 'asc'}).exec(function(err, result){
+        return Task.find({user_id: new mongoose.Types.ObjectId(user_id)}, null, {sort: {name: 'asc'}}, function(err, result){
             if(err)
                 return err.message;
-            
             return result;
-        })},
+
+        })
+    },
+        
      UnfinishedTasks: (_, { user_id }) =>{
-     return Task.find({user_id: new mongoose.Types.ObjectId(user_id), isMade: false})
-     .exec(function(err, result){
+        return Task.find({user_id: new mongoose.Types.ObjectId(user_id), isMade: false}, null, null,
+        function(err, result){
             if(err)
                 return err.message;
             return result;
-        })},
+        })
+      },
     },
     Mutation: {
       registration: (root, args) => {
@@ -55,18 +57,16 @@ const resolvers = {
         new_task.save(function(err, user) {
             if (err) {
                 if (err.code === 11000) {
-                    res.status(409).send({message: 'Account already exists.'});
-                    return;
+                    return 'error';
                 }
                 console.log(err);
-                res.status(400).send(err);
-                return
+                return 'error';
             }
             else {
                 user.token = generationToken(user);
                 return user;
             }
-        });
+        })
       }, 
       login: (root, args) => {
         const note = { 
@@ -88,6 +88,65 @@ const resolvers = {
             return user;
         })
       }, 
+      deleteTask: (root, args) => {
+        Task.deleteOne({_id: args.id}, function(err, task) {
+            if (err) {
+                return false;
+            } else {
+                return task;
+            } 
+        });
+      },
+
+      setStatus: (root, args) => {
+                return Task.findOneAndUpdate({_id: args.id}, args.status, {new: true}, function(err, result) {
+                    if (err) {
+                        return "error";
+                    } else {
+                        console.log(result);
+                        return result;
+                    } 
+                });
+        
+      }, 
+
+      updateTask: (root, args) => {
+          console.log("update");
+          const note = { 
+            _id: args.id,
+            name: args.name, 
+            deadline: args.deadline, 
+            details: args.details, 
+            isMade: args.isMade, 
+            user_id: args.user_id,
+        };
+         Task.findOneAndUpdate({_id: args.id}, note, {new: true}, function(err, task2) {
+            if (err) {
+                return 'error';
+            } else {
+                return task2;
+            } 
+        })
+    },
+
+        addTask: (root, args) => {
+            console.log("addTask");
+            const note = { 
+                name: args.name, 
+                deadline: args.deadline, 
+                details: args.details, 
+                isMade: args.isMade, 
+                user_id: args.user_id,
+            };
+
+            var new_task = new Task(note);
+            return new_task.save(function(err, task) {
+                if (err) 
+                    return 'error';
+                else 
+                    return task;
+            });
+        }, 
       
     },
   };

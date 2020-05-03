@@ -7,7 +7,16 @@ type User {
 }
 
 type Task {
-    id: ID!
+    _id: ID!
+    name: String
+    deadline: String
+    details: String
+    isMade: Boolean
+    user_id: ID!
+}
+
+input TaskInput {
+    _id: ID!
     name: String
     deadline: String
     details: String
@@ -16,15 +25,19 @@ type Task {
 }
 
 type Query {
-    Task(id: ID!):Task
+    GetTask(id: ID!):Task
     Tasks(user_id: ID!): [Task]
-    SortedByDeadlineTasks(user_id: ID!): [Task]
     SortedByNameTasks(user_id: ID!): [Task]
     UnfinishedTasks(user_id: ID!): [Task]
+    SortedByDeadlineTasks(user_id: ID!): [Task]
 }
 type Mutation {
     registration(userName: String, password: String) : User
     login(userName: String, password: String) : User
+    setStatus(id: ID!, status: Boolean): Task
+    addTask(name: String, deadline: String, details: String, isMade: Boolean, user_id: ID!) : Task
+    updateTask(id: ID!, name: String, deadline: String, details: String, isMade: Boolean, user_id: ID!) : Task
+    deleteTask(id: ID!): Task
 }
 `;
 

@@ -3,6 +3,7 @@ import { Task } from '../models/task';
 import { TaskService } from '../services/task.server';
 import { CommonModule } from '@angular/common';  
 import { BrowserModule } from '@angular/platform-browser';
+import { TaskInput } from '../models/taskSend';
 
 @Component({
   selector: 'app-customer-item',
@@ -13,6 +14,7 @@ export class TaskListComponent implements OnInit {
   tasks: Task[];
   today: number;
   userId: Object;
+  taskInput: TaskInput;
 
   constructor(private taskService: TaskService) { }
 
@@ -21,12 +23,12 @@ export class TaskListComponent implements OnInit {
   }
 
   getAllTasks() {
-    this.userId = JSON.parse(localStorage.getItem('currentUser'))._id;
+    this.userId = JSON.parse(localStorage.getItem('currentUser') || '{}')._id;
+    console.log(this.userId);
     this.taskService.getTasks(this.userId).subscribe(h => this.getDates(h));
-    
   }
 
-  getDates(h){
+  getDates(h: Task[]){
     this.tasks = h;
     console.log(this.tasks);
     this.today = Date.parse(new Date(new Date().getFullYear(),new Date().getMonth(), new Date().getDate()).toString());
@@ -37,13 +39,15 @@ export class TaskListComponent implements OnInit {
   }
 
   onFinish(id){
-    let task = this.tasks.find(f=> f._id == id);
-    this.taskService.setTaskStatus(task, true).subscribe(c => task.isMade = true);
+    let task = this.tasks.find(f=> f._id === id);
+    this.taskInput = task;
+    this.taskService.setTaskStatus(this.taskInput, true).subscribe(c => task.isMade = true);
   }
 
   onUnfinish(id){
-    let task = this.tasks.find(f=> f._id == id);
-    this.taskService.setTaskStatus(task, false).subscribe(c => task.isMade = false);
+    let task = this.tasks.find(f=> f._id === id);
+    this.taskInput = task;
+    this.taskService.setTaskStatus(this.taskInput, false).subscribe(c => task.isMade = false);
   }
 
   showUnfinished(){

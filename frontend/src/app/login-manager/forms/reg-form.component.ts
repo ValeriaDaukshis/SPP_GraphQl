@@ -17,7 +17,7 @@ export class RegComponent implements OnInit {
     user = new regUser("", "", "");
     loading = false;
     submitted = false;
-    returnUrl: string;
+    returnUrl: String;
     error = '';
 
     constructor(
@@ -35,20 +35,20 @@ export class RegComponent implements OnInit {
     }
 
     onRegistrate(user: regUser) {
-        this.submitted = true;
+        // this.submitted = true;
     
-        this.loading = true;
-        this.authenticationService.registrate(new User(null, user.username, user.password, null))
-            .pipe(first())
-            .subscribe(
-                data => {
-                    this.router.navigate(['/login']);
-                },
-                error => {
-                    this.error = error;
-                    this.loading = false;
-                });
-        }
+        // this.loading = true;
+        // this.authenticationService.registrate(new User(null, user.username, user.password, null))
+        //     .pipe(first())
+        //     .subscribe(
+        //         data => {
+        //             this.router.navigate(['/login']);
+        //         },
+        //         error => {
+        //             this.error = error;
+        //             this.loading = false;
+        //         });
+         }
 }
 
 

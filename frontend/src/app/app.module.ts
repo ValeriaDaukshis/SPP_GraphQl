@@ -29,7 +29,7 @@ import { GraphQLModule } from "./graphql.module";
   imports: [
     BrowserModule,
     FormsModule,
-    NgbModule.forRoot(),
+    NgbModule,
     HttpClientModule,
     AppRoutingModule,
     GraphQLModule

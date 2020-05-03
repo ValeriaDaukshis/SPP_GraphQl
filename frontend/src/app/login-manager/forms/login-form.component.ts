@@ -13,10 +13,10 @@ import {User} from '../models/user';
  })
 
 export class LoginComponent implements OnInit {
-    user = new User(null, "", "",null);
+    user = new User({}, "", "","");
     loading = false;
     submitted = false;
-    returnUrl: string;
+    returnUrl: String;
     error = '';
 
     constructor(
@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(user)
         .subscribe(
             data => {
+                console.log(data);
                 let userId = data._id;
                 this.router.navigate([`${userId}/tasks`]);
             },
@@ -52,20 +53,20 @@ export class LoginComponent implements OnInit {
     }
 
     onRegistrate(user: User) {
-        this.submitted = true;
+        // this.submitted = true;
     
-        this.loading = true;
-        this.authenticationService.registrate(user)
-            .pipe(first())
-            .subscribe(
-                data => {
-                    this.router.navigate(['/login']);
-                },
-                error => {
-                    this.error = error;
-                    this.loading = false;
-                });
-        }
+        // this.loading = true;
+        // this.authenticationService.registrate(user)
+        //     .pipe(first())
+        //     .subscribe(
+        //         data => {
+        //             this.router.navigate(['/login']);
+        //         },
+        //         error => {
+        //             this.error = error;
+        //             this.loading = false;
+        //         });
+         }
 }
 
 

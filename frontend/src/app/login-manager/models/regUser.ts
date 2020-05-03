@@ -1,7 +1,7 @@
 export class regUser {
     constructor(
-    public username: string,
-    public password: string,
-    public repeatPassword: string,
+    public username: String,
+    public password: String,
+    public repeatPassword: String,
     ){}
 }

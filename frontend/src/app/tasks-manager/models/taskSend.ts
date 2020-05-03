@@ -1,6 +1,6 @@
 import { User } from "app/login-manager/models/user";
 
-export class Task{
+export class TaskInput{
     constructor(
         public _id: Object,
         public name: String,
