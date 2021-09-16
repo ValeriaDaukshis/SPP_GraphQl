@@ -53,7 +53,7 @@
     "randomatic": "^3.1.1",
     "rxjs": "^6.5.5",
     "serialize-javascript": "^3.0.0",
-    "set-value": "^3.0.2",
+    "set-value": "^4.0.1",
     "stringstream": "^1.0.0",
     "tar": "^6.0.1",
     "tslib": "^1.10.0",
